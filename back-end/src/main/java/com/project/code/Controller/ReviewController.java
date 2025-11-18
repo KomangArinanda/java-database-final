@@ -1,12 +1,52 @@
 package com.project.code.Controller;
 
+import com.project.code.Model.Customer;
+import com.project.code.Model.Review;
+import com.project.code.Model.ReviewResponseDto;
+import com.project.code.Repo.CustomerRepository;
+import com.project.code.Repo.ReviewRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/reviews")
 public class ReviewController {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @GetMapping("/{storeId}/{productId}")
+    public Map<String, Object> getReviews(@PathVariable Long storeId, @PathVariable Long productId) {
+        List<Review> reviewList = reviewRepository.findAllByStoreIdAndProductId(storeId, productId);
+        List<ReviewResponseDto> responses = new ArrayList<>();
+        for (Review review : reviewList) {
+            String customerName = customerRepository.findById(review.getCustomerId())
+                .map(Customer::getName)
+                .orElse("Unknown");
+            ReviewResponseDto reviewResponseDto = new ReviewResponseDto(review.getComment(), customerName,
+                review.getRating());
+            responses.add(reviewResponseDto);
+        }
+
+        return Map.of("reviews", responses);
+    }
+
 // 1. Set Up the Controller Class:
 //    - Annotate the class with `@RestController` to designate it as a REST controller for handling HTTP requests.
 //    - Map the class to the `/reviews` URL using `@RequestMapping("/reviews")`.
 
 
- // 2. Autowired Dependencies:
+    // 2. Autowired Dependencies:
 //    - Inject the following dependencies via `@Autowired`:
 //        - `ReviewRepository` for accessing review data.
 //        - `CustomerRepository` for retrieving customer details associated with reviews.
@@ -20,6 +60,5 @@ public class ReviewController {
 //    - Use `findById(review.getCustomerId())` from `CustomerRepository` to get customer name.
 //    - Return filtered reviews in a `Map<String, Object>` with key `reviews`.
 
-    
-   
+
 }

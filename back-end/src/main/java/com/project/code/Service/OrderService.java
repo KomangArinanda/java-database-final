@@ -1,7 +1,62 @@
 package com.project.code.Service;
 
+import com.project.code.Model.*;
+import com.project.code.Repo.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
+@Service
 public class OrderService {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private InventoryRepository inventoryRepository;
+
+    @Autowired
+    private OrderDetailsRepository orderDetailsRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private StoreRepository storeRepository;
+
+    @Transactional
+    public void saveOrder(PlaceOrderRequestDTO placeOrderRequestDTO) {
+        Customer customer = customerRepository.findByEmail(placeOrderRequestDTO.getCustomerEmail());
+        if (customer == null) {
+            Customer newCustomer = new Customer(placeOrderRequestDTO.getCustomerEmail(),
+                placeOrderRequestDTO.getCustomerName(), placeOrderRequestDTO.getCustomerPhone());
+            customer = customerRepository.save(newCustomer);
+        }
+
+        Store store = storeRepository.findById(placeOrderRequestDTO.getStoreId())
+            .orElseThrow(() -> new RuntimeException("Store not found"));
+
+        OrderDetails orderDetails = new OrderDetails(customer, store, placeOrderRequestDTO.getTotalPrice(),
+            LocalDateTime.now());
+        orderDetails = orderDetailsRepository.save(orderDetails);
+
+        for (PurchaseProductDTO productDTO : placeOrderRequestDTO.getPurchaseProduct()) {
+            Product product = productRepository.findById(productDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+            Inventory inventory = inventoryRepository.findByProductIdandStoreId(productDTO.getId(), store.getId());
+            inventory.setStockLevel(inventory.getStockLevel() - productDTO.getQuantity());
+            inventoryRepository.save(inventory);
+
+            OrderItem orderItem = new OrderItem(orderDetails, product, productDTO.getQuantity(), product.getPrice());
+            orderItemRepository.save(orderItem);
+        }
+    }
 // 1. **saveOrder Method**:
 //    - Processes a customer's order, including saving the order details and associated items.
 //    - Parameters: `PlaceOrderRequestDTO placeOrderRequest` (Request data for placing an order)
@@ -23,5 +78,5 @@ public class OrderService {
 //    - For each product purchased, find the corresponding inventory, update stock levels, and save the changes using `inventoryRepository.save()`.
 //    - Create and save `OrderItem` for each product and associate it with the `OrderDetails` using `orderItemRepository.save()`.
 
-   
+
 }

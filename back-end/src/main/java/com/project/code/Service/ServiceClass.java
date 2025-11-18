@@ -1,8 +1,39 @@
 package com.project.code.Service;
 
+import com.project.code.Model.Inventory;
+import com.project.code.Repo.InventoryRepository;
+import com.project.code.Repo.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
+@Service
 public class ServiceClass {
-    
+
+    @Autowired
+    private InventoryRepository inventoryRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    public Inventory getInventoryId(Inventory inventory) {
+        return inventoryRepository.findByProductIdandStoreId(inventory.getProduct()
+            .getId(), inventory.getStore()
+            .getId());
+    }
+
+    public boolean validateInventory(Inventory inventory) {
+        return Optional.ofNullable(inventoryRepository.findByProductIdandStoreId(inventory.getProduct()
+                .getId(), inventory.getStore()
+                .getId()))
+            .isEmpty();
+    }
+
+    public boolean validateProductId(long id) {
+        return productRepository.existsById(id);
+    }
+
 // 1. **validateInventory Method**:
 //    - Checks if an inventory record exists for a given product and store combination.
 //    - Parameters: `Inventory inventory`

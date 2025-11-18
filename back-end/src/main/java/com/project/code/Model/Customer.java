@@ -1,17 +1,11 @@
 package com.project.code.Model;
 
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
 
 @Entity
 public class Customer {
@@ -32,6 +26,12 @@ public class Customer {
 
     @NotNull(message = "Phone cannot be null")
     private String phone;
+
+    public Customer(String email, String name, String phone) {
+        this.email = email;
+        this.name = name;
+        this.phone = phone;
+    }
 
     public String getEmail() {
         return email;

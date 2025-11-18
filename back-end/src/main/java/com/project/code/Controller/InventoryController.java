@@ -1,6 +1,110 @@
 package com.project.code.Controller;
 
+import com.project.code.Model.CombinedRequest;
+import com.project.code.Model.Inventory;
+import com.project.code.Model.Product;
+import com.project.code.Repo.InventoryRepository;
+import com.project.code.Repo.ProductRepository;
+import com.project.code.Service.ServiceClass;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/inventory")
 public class InventoryController {
+
+    @Autowired
+    private InventoryRepository inventoryRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private ServiceClass serviceClass;
+
+    @GetMapping("/{storeId}")
+    public Map<String, List<Product>> getAllProducts(@PathVariable Long storeId) {
+        List<Product> products = productRepository.findProductByStoreId(storeId);
+        return Map.of("products", products);
+    }
+
+    @GetMapping("filter/{category}/{name}/{storeId}")
+    public Map<String, Object> getProductName(@PathVariable String category, @PathVariable String name,
+                                              @PathVariable Long storeId) {
+        List<Product> products = new ArrayList<>();
+        if (name != null && category != null) {
+            products = productRepository.findByNameAndCategory(storeId, name, category);
+        } else if (name != null) {
+            products = productRepository.findByNameLike(storeId, name);
+        } else if (category != null) {
+            products = productRepository.findByCategoryAndStoreId(storeId, category);
+        }
+        return Map.of("product", products);
+    }
+
+    @DeleteMapping("/{id}")
+    public Map<String, String> removeProduct(@PathVariable Long id) {
+        if (!serviceClass.validateProductId(id)) {
+            return Map.of("message", "the product not present in database");
+        }
+        inventoryRepository.deleteByProductId(id);
+        return Map.of("message", "the product was deleted");
+    }
+
+    @PostMapping
+    public Map<String, String> saveInventory(@RequestBody Inventory inventory) {
+        if (serviceClass.validateInventory(inventory)) {
+            inventoryRepository.save(inventory);
+            return Map.of("message", "data saved successfully");
+        } else {
+            return Map.of("message", "the data is already present");
+        }
+    }
+
+    @GetMapping("search/{name}/{storeId}")
+    public Map<String, Object> searchProduct(@PathVariable String name, @PathVariable Long storeId) {
+        List<Product> products = productRepository.findByNameLike(storeId, name);
+        return Map.of("product", products);
+    }
+
+    @PutMapping
+    public Map<String, String> updateInventory(@RequestBody CombinedRequest combinedRequest) {
+        if (serviceClass.validateProductId(combinedRequest.getProduct()
+            .getId())) {
+            if (serviceClass.validateInventory(combinedRequest.getInventory())) {
+                Inventory existingInventory = inventoryRepository.findByProductIdandStoreId(
+                    combinedRequest.getInventory()
+                        .getProduct()
+                        .getId(), combinedRequest.getInventory()
+                        .getStore()
+                        .getId());
+                combinedRequest.getInventory()
+                    .setId(existingInventory.getId());
+                try {
+                    inventoryRepository.save(combinedRequest.getInventory());
+                    return Map.of("message", "Successfully updated product");
+                } catch (Exception e) {
+                    return Map.of("message", "Error update inventory");
+                }
+            } else {
+                return Map.of("message", "No data available");
+            }
+        } else {
+            return Map.of("message", "Product data not available");
+        }
+    }
+
+    @GetMapping("validate/{quantity}/{storeId}/{productId}")
+    public boolean validateQuantity(@PathVariable Integer quantity, @PathVariable Long storeId,
+                                    @PathVariable Long productId) {
+        Inventory inventory = inventoryRepository.findByProductIdandStoreId(productId, storeId);
+        return inventory.getStockLevel() >= quantity;
+    }
+
 // 1. Set Up the Controller Class:
 //    - Annotate the class with `@RestController` to indicate that this is a REST controller, which handles HTTP requests and responses.
 //    - Use `@RequestMapping("/inventory")` to set the base URL path for all methods in this controller. All endpoints related to inventory will be prefixed with `/inventory`.
