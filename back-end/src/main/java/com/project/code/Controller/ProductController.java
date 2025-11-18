@@ -65,10 +65,13 @@ public class ProductController {
         return Map.of("product", productRepository.findProductByCategory(category, storeId));
     }
 
-    @GetMapping("/product/{id}")
+    @GetMapping("/{id}")
     public Map<String, Object> getProductbyId(@PathVariable Long id) {
         Product product = productRepository.findById(id)
             .orElse(null);
+        if (product == null) {
+            return Map.of("Error", "Product not found in database");
+        }
         return Map.of("products", product);
     }
 

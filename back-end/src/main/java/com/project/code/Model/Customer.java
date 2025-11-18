@@ -22,7 +22,7 @@ public class Customer {
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     @JsonManagedReference
-    private List<OrderDetails> orderDetails;
+    private List<OrderDetails> orders;
 
     @NotNull(message = "Phone cannot be null")
     private String phone;
@@ -57,8 +57,8 @@ public class Customer {
         this.name = name;
     }
 
-    public List<OrderDetails> getOrderDetails() {
-        return orderDetails;
+    public List<OrderDetails> getOrders() {
+        return orders;
     }
 
     public String getPhone() {

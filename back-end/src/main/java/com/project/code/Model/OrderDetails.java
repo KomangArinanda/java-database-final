@@ -23,6 +23,7 @@ public class OrderDetails {
     @JsonManagedReference
     private Customer customer;
 
+    // date when the order is created
     private LocalDateTime date;
 
     @Id
