@@ -1,8 +1,77 @@
 package com.project.code.Model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@Entity
 public class Inventory {
-   // 1. Add 'id' field:
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    @JsonBackReference("inventory-product")
+    private Product product;
+
+    private Integer stockLevel;
+
+    @ManyToOne
+    @JoinColumn(name = "store_id")
+    @JsonBackReference("inventory-store")
+    private Store store;
+
+    public Inventory(Product product, Store store, Integer stockLevel) {
+        this.product = product;
+        this.store = store;
+        this.stockLevel = stockLevel;
+    }
+
+    public Inventory() {
+
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public Integer getStockLevel() {
+        return stockLevel;
+    }
+
+    public void setStockLevel(Integer stockLevel) {
+        this.stockLevel = stockLevel;
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
+    }
+
+    // 1. Add 'id' field:
 //    - Type: private long 
 //    - This field will represent the unique identifier for the inventory entry.
 //    - Use @Id to mark it as the primary key.
@@ -46,4 +115,3 @@ public class Inventory {
 //    - Example: public Integer getStockLevel(), public void setStockLevel(Integer stockLevel)
 
 }
-

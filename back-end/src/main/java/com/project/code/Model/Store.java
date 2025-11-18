@@ -1,9 +1,77 @@
 package com.project.code.Model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
+
+@Entity
 public class Store {
 
-// 1. Add 'id' field:
+    @NotNull(message = "Address cannot be null")
+    private String address;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @OneToMany(mappedBy = "store")
+    @JsonManagedReference("inventory-store")
+    private List<Inventory> inventory;
+
+    @NotNull(message = "Name cannot be null")
+    private String name;
+
+    public Store(String address, List<Inventory> inventory, String name) {
+        this.address = address;
+        this.inventory = inventory;
+        this.name = name;
+    }
+
+    public Store(String name, String address) {
+        this.name = name;
+        this.address = address;
+    }
+
+    public Store() {
+
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public List<Inventory> getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(List<Inventory> inventory) {
+        this.inventory = inventory;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // 1. Add 'id' field:
 //    - Type: private long 
 //    - This field will be auto-incremented.
 //    - Use @Id to mark it as the primary key.

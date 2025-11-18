@@ -1,12 +1,76 @@
 package com.project.code.Model;
 
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
+
+@Entity
 public class Customer {
 
-// 1. Add 'id' field: 
-//    - Type: private long 
+    @NotNull(message = "Email cannot be null")
+    private String email;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @NotNull(message = "Name cannot be null")
+    private String name;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<OrderDetails> orderDetails;
+
+    @NotNull(message = "Phone cannot be null")
+    private String phone;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<OrderDetails> getOrderDetails() {
+        return orderDetails;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+// 1. Add 'id' field:
+//    - Type: private long
 //    - It should be auto-incremented.
+
 //    - Use @Id to mark it as the primary key and @GeneratedValue(strategy = GenerationType.IDENTITY) to auto-increment it.
+
 
 // 2. Add 'name' field:
 //    - Type: private String
@@ -34,6 +98,10 @@ public class Customer {
 
     // Example: @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     // Example: @JsonManagedReference
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
 // 6. Getters and Setters:
 //    - For each field ('id', 'name', 'email', 'phone'), add getter and setter methods.

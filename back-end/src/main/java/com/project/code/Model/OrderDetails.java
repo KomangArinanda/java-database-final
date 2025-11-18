@@ -1,7 +1,103 @@
 package com.project.code.Model;
 
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
+@Entity
 public class OrderDetails {
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    @JsonManagedReference
+    private Customer customer;
+
+    private LocalDateTime date;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<OrderItem> orderItems;
+
+    @ManyToOne
+    @JoinColumn(name = "store_id")
+    @JsonManagedReference
+    private Store store;
+
+    private Double totalPrice;
+
+    public OrderDetails(Customer customer, Store store, Double totalPrice, LocalDateTime date) {
+        this.customer = customer;
+        this.store = store;
+        this.totalPrice = totalPrice;
+        this.date = date;
+    }
+
+    public OrderDetails() {
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
+    }
+
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
 
 // 1. Add 'id' field:
 //    - Type: private Long 
@@ -44,5 +140,5 @@ public class OrderDetails {
 
 // 9. Add Getters and Setters:
 //    - Add getter and setter methods for all fields (id, customer, store, totalPrice, date, orderItems).
-  
+
 }

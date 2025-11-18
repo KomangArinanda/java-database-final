@@ -1,7 +1,84 @@
 package com.project.code.Model;
 
+import jakarta.validation.constraints.NotNull;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collation = "reviews")
 public class Review {
 
+    private String comment;
+
+    @NotNull(message = "Customer cannot be null")
+    private Long customerId;
+
+    @Id
+    private String id;
+
+    @NotNull(message = "Product cannot be null")
+    private Long productId;
+
+    @NotNull(message = "Rating cannot be null")
+    private Integer rating;
+
+    @NotNull(message = "Store cannot be null")
+    private Long storeId;
+
+    public Review(String comment, Long customerId, Long productId, Integer rating, Long storeId) {
+        this.comment = comment;
+        this.customerId = customerId;
+        this.productId = productId;
+        this.rating = rating;
+        this.storeId = storeId;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public @NotNull(message = "Customer cannot be null") Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(@NotNull(message = "Customer cannot be null") Long customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public @NotNull(message = "Product cannot be null") Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(@NotNull(message = "Product cannot be null") Long productId) {
+        this.productId = productId;
+    }
+
+    public @NotNull(message = "Rating cannot be null") Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(@NotNull(message = "Rating cannot be null") Integer rating) {
+        this.rating = rating;
+    }
+
+    public @NotNull(message = "Store cannot be null") Long getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(@NotNull(message = "Store cannot be null") Long storeId) {
+        this.storeId = storeId;
+    }
 // 1. Add 'customerId' field:
 //    - Type: private Long
 //    - This field represents the customer who created the review.
@@ -42,6 +119,6 @@ public class Review {
 
 // 10. Add Getters and Setters:
 //    - Add getter and setter methods for all fields (customerId, productId, storeId, rating, comment).
-  
+
 
 }
